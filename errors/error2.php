@@ -2,7 +2,7 @@
 require_once "pdo.php";
 
 // GET Parameter user_id=1
-
+// Get an another parameter
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 $stmt = $pdo->prepare("SELECT * FROM users where user_id = :xyz");
