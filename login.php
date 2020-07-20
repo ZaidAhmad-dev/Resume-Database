@@ -1,33 +1,50 @@
 <?php
-require_once "pdo.php";
+   
+   session_start();
 
-if(isset($_POST['email']) && isset($_POST['password']) ){
-        echo ("Handling Post Data.. \n");
-        $sql = "SELECT name FROM users WHERE :em= email and :pw=password ";
-        echo "<pre>\n.$sql.\n</pre>";
-        $stmt = $pdo->prepare($sql);
-        $stmt -> execute(array(
-            ':em' => $_POST['email'],
-            ':pw' => $_POST['password']
-        ));
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-}
+   if(isset($_POST["account"]) && isset($_POST["pw"])){
+      unset($_SESSION["account"]);
 
-var_dump($row);
-if ( $row === FALSE ) {
-   echo "<h1>Login incorrect.</h1>\n";
-} else { 
-   echo "<p>Login success.</p>\n";
-}
+      if ($_POST['pw']== 'umsi') {
+         $_SESSION["account"] = $_POST["account"];
+         $_SESSION["success"] = "Logged in.";
+            header( 'Location: app.php' ) ;
+            return;
+        } else {
+            $_SESSION["error"] = "Incorrect password.";
+            header( 'Location: login.php' ) ;
+            return;
+        }
+      }
 
 ?>
-<p>Please Login</p>
-<form method="post">
-<p>Email:
-<input type="text" size="40" name="email"></p>
-<p>Password:
-<input type="text" size="40" name="password"></p>
-<p><input type="submit" value="Login"/>
-<a href="<?php echo($_SERVER['PHP_SELF']);?>">Refresh</a></p>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Login with Sessions by Zaid</title>
+</head>
+<body>
+
+<h1>Please Log in</h1>
+
+   <?php
+
+      if (isset($_SESSION['error'])) {
+         echo('<p style= "color:red">  '.$_SESSION["error"]."</p>\n");
+         unset($_SESSION['error']);
+      }
+
+   ?>
+   <form method="post">
+<p>Account: <input type="text" name="account" value=""></p>
+<p>Password: <input type="text" name="pw" value=""></p>
+<!-- password is umsi -->
+<p><input type="submit" value="Log In">
+<a href="app.php">Cancel</a></p>
 </form>
-<p>
+</body>
+</html>
