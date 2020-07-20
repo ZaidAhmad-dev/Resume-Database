@@ -1,3 +1,19 @@
+//
+
+
+
+
+
+
+
+// Just for learning
+
+
+
+
+
+//
+
 <?php
 require_once "pdo.php";
 
