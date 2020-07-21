@@ -2,48 +2,99 @@
 require_once "pdo.php";
 session_start();
 
-if ( isset($_POST['name']) && isset($_POST['email'])
-     && isset($_POST['password'])) {
+$host = $_SERVER['HTTP_HOST'];
 
-    // Data validation
-    if ( strlen($_POST['name']) < 1 || strlen($_POST['password']) < 1) {
-        $_SESSION['error'] = 'Missing data';
-        header("Location: add.php");
-        return;
-    }
+//phpself is a function which returns currently executing directory
 
-    if ( strpos($_POST['email'],'@') === false ) {
-        $_SESSION['error'] = 'Bad data';
-        header("Location: add.php");
-        return;
-    }
+$route = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
+$url = "http://$host$route"; 
 
-    $sql = "INSERT INTO users (name, email, password)
-              VALUES (:name, :email, :password)";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute(array(
-        ':name' => $_POST['name'],
-        ':email' => $_POST['email'],
-        ':password' => $_POST['password']));
-    $_SESSION['success'] = 'Record Added';
-    header( 'Location: index.php' ) ;
+if (!isset($_SESSION["user_id"])) {
+    return("Not logged in");    
+}
+
+if (isset($_POST["cancel"])) { 
+    header("Location: index.php");
     return;
 }
 
-// Flash pattern
-if ( isset($_SESSION['error']) ) {
-    echo '<p style="color:red">'.$_SESSION['error']."</p>\n";
-    unset($_SESSION['error']);
+if (isset($_POST["add"])) {
+    if (strlen($_POST["first_name"]) < 1
+        || strlen($_POST["last_name"]) < 1
+        || strlen($_POST["email"]) < 1
+        || strlen($_POST["headline"]) < 1
+        || strlen($_POST["summary"]) < 1
+    ) {
+        $_SESSION["error"] = "All fields are required";
+        header("Location: add.php");
+        die();
+    }
+
+    if (strpos($_POST["email"], "@") === false) {
+        $_SESSION["error"] = "Email address must contain @";
+        header("Location: add.php");
+        die();
+    }
+    $stmt = $pdo->prepare(
+        'INSERT INTO Profile
+        (user_id, first_name, last_name, email, headline, summary)
+        VALUES ( :uid, :fn, :ln, :em, :he, :su)'
+    );
+
+    $stmt->execute(
+        array(
+            ':uid' => $_SESSION['user_id'],
+            ':fn' => $_POST['first_name'],
+            ':ln' => $_POST['last_name'],
+            ':em' => $_POST['email'],
+            ':he' => $_POST['headline'],
+            ':su' => $_POST['summary']
+        )
+    );
+    $_SESSION["success"] = "Profile added";
+    header("Location: index.php");
+    die();
 }
 ?>
-<p>Add A New User</p>
-<form method="post">
-<p>Name:
-<input type="text" name="name"></p>
-<p>Email:
-<input type="text" name="email"></p>
-<p>Password:
-<input type="password" name="password"></p>
-<p><input type="submit" value="Add New"/>
-<a href="index.php">Cancel</a></p>
-</form>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Zaid Ahmad</title>
+</head>
+<body style="font-family: Helvetica">
+    <h1>Adding Profile for <?php echo htmlentities($_SESSION["name"]); ?></h1>
+    <?php
+    if (isset($_SESSION["error"])) {
+        echo('<p style="color: red;">' . $_SESSION["error"]);
+        unset($_SESSION["error"]);
+    }
+    ?>
+    <form method="post">
+        <label>First Name:</label>
+        <input type="text" name="first_name">
+        <br>
+        <label>Last Name:</label>
+        <input type="text" name="last_name">
+        <br>
+        <label>Email:</label>
+        <input type="text" name="email">
+        <br>
+        <label>Headline:</label>
+        <br>
+        <input type="text" name="headline">
+        <br>
+        <label>Summary:</label>
+        <br>
+        <textarea
+            name="summary"
+            cols="100"
+            rows="20"
+            style="resize: none;"
+        ></textarea>
+        <br>
+        <input type="submit" name="add" value="Add">
+        <input type="submit" name="cancel" value="Cancel">
+    </form>
+</body>
+</html>
