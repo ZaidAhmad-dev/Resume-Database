@@ -39,9 +39,11 @@ if (isset($_POST['first_name']) && isset($_POST['first_name']) && isset($_POST['
     } elseif (strpos($_POST['email'], '@') === false) {
         $_SESSION['error'] = 'Bad Email';
         header("Location: edit.php");
+        return;
     } elseif (validatePos() != true) {
         $_SESSION['error'] = validatePos();
         header("Location: edit.php");
+        return;
     } else {
         $sql = "UPDATE Profile SET first_name = :first_name, last_name = :last_name,email=:email,headline=:headline,summary=:summary
             WHERE profile_id = :profile_id";

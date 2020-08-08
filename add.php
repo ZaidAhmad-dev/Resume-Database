@@ -38,6 +38,7 @@ if (isset($_POST['first_name']) && isset($_POST['last_name']) && isset($_POST['e
         $_SESSION['error'] = 'Email must contain @';
     } elseif (!validatePos()) {
         $_SESSION['error'] = validatePos();
+        return;
     } else {
         $stmt = $pdo->prepare('INSERT INTO Profile (user_id, first_name, last_name, email, headline, summary) VALUES ( :uid, :fn, :ln, :em, :he, :su)');
 
