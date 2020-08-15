@@ -37,8 +37,8 @@ if ( $row === false ) {
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Zaid Ahmad Assignment 3</title>
-    <?php require_once "bootstrap.php"; ?>
+    <?php require_once "head.php"; ?>
+    <title>Zaid Ahmad Resume Database</title>
 </head>
 <body>
 <div class="container">

@@ -1,6 +1,9 @@
 <?php // Do not put any HTML above this line
 session_start();
+
 require_once "pdo.php";
+require_once "util.php";
+
 $stmt = $pdo->query("SELECT profile_id, first_name,last_name , headline from users join Profile on users.user_id = Profile.user_id");
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -9,22 +12,19 @@ $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Zaid Ahmad</title>
-    <?php require_once "bootstrap.php"; ?>
+    <?php require_once "head.php"; ?>
+    <title>Zaid Ahmad Resume Database</title>
 </head>
 <body>
 <div class="container">
-    <h2>Zaid Ahmad Resume Registry</h2>
+    <h2>Zaid Ahmad Resume Database</h2>
     <?php
     if (isset($_SESSION['name'])) {
         echo '<p><a href="logout.php">Logout</a></p>';
     }
     ?>
     <?php
-    if (isset($_SESSION['success'])) {
-        echo('<p style="color: green;">' . htmlentities($_SESSION['success']) . "</p>\n");
-        unset($_SESSION['success']);
-    }
+    flashMessage();
     ?>
 
     <ul>
